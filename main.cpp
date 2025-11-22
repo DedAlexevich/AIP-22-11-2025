@@ -3,14 +3,16 @@
 class Ints {
 public:
   Ints();
-  Ints(size_t v, int a) : n(v), data(new int[v]{})
+
+  Ints(size_t s, int c) : k(s), data(s ? new int[s]{} : nullptr)
   {
-    for (size_t i = 0; i < v; i++) {
-      data[i] = a;
+    for (size_t i = 0; i < s; i++) {
+      data[i] = c;
     }
   }
+
   Ints(const Ints& c);
-  Ints(Ints&& c)  : n(c.n), data(c.data)
+  Ints(Ints&& c)  : k(c.k), data(c.data)
   {
     c.data = nullptr;
   }
@@ -25,7 +27,7 @@ public:
   Ints append(int v) const;
 
 private:
-  size_t n;
+  size_t k;
   int* data;
 };
 
@@ -42,7 +44,7 @@ public:
   Points(size_t k, p_t a);
   void set(size_t id, p_t a);
   p_t get(size_t id) const;
-  size_t size();
+  size_t sizePoints();
   Points append(p_t a) const;
   Points append(const Points& w) const;
 };
@@ -54,7 +56,7 @@ Points::Points(size_t k, p_t a) : data(k*2, a.x)
   }
 }
 
-size_t Points::size()
+size_t Points::sizePoints()
 {
   return data.size()/2;
 }
@@ -78,6 +80,12 @@ Points Points::append(p_t a) const
   return Points(std::move(delta));
 }
 
+Points Points::append(const Points& w) const
+{
+  Ints delta(w.data);
+  delta = data.append(delta);
+  return Points(std::move(delta));
+}
 
 
 
@@ -89,10 +97,10 @@ int main()
 {
   Points a(2, p_t{1,2});
   p_t z {3, 4};
+  Points b(a);
+  Points c = a.append(b);
 
-  a = a.append(z);
-
-  std::cout << "CHECK\n";
+  std::cout << "CHECK\n" << a.sizePoints();
 
 }
 
@@ -108,22 +116,22 @@ Ints Ints::append(const Ints& arr) const
 Ints Ints::append(int v) const
 {
   Ints r;
-  r.data = new int[n+1];
-  for (size_t i = 0; i < n; ++i) {
+  r.data = new int[k+1];
+  for (size_t i = 0; i < k; ++i) {
     r.data[i] = data[i];
   }
-  r.data[n] = v;
-  r.n = n+1;
+  r.data[k] = v;
+  r.k = k+1;
   return r;
 }
 
-Ints::Ints() : n(0), data(nullptr)
+Ints::Ints() : k(0), data(nullptr)
 {}
 
-Ints::Ints(const Ints& c) : n(c.n), data(c.n ? new int[c.n] : nullptr)
+Ints::Ints(const Ints& c) : k(c.k), data(c.k ? new int[c.k] : nullptr)
 {
-  if (c.n) {
-    for (size_t i = 0; i < c.n; ++i) {
+  if (c.k) {
+    for (size_t i = 0; i < c.k; ++i) {
       data[i] = c.data[i];
     }
   }
@@ -132,15 +140,15 @@ Ints::Ints(const Ints& c) : n(c.n), data(c.n ? new int[c.n] : nullptr)
 Ints& Ints::operator=(const Ints& i)
 {
   int* r = nullptr;
-  if (i.n) {
-    r = new int[i.n];
-    for (size_t j = 0; j < i.n; ++j) {
+  if (i.k) {
+    r = new int[i.k];
+    for (size_t j = 0; j < i.k; ++j) {
       r[j] = i.data[j];
     }
   }
   delete[] data;
   data = r;
-  n = i.n;
+  k = i.k;
   return *this;
 }
 
@@ -149,7 +157,7 @@ Ints& Ints::operator=(Ints&& i)
   if (this != &i) {
     delete[] data;
     data = i.data;
-    n = i.n;
+    k = i.k;
     i.data = nullptr;
   }
   return *this;
@@ -162,7 +170,7 @@ Ints::~Ints()
 
 size_t Ints::size() const
 {
-  return n;
+  return k;
 }
 
 int Ints::get(size_t id) const
