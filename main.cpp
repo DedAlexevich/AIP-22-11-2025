@@ -1,6 +1,5 @@
 #include <iostream>
 
-
 class Ints {
 public:
   Ints();
@@ -36,6 +35,8 @@ struct p_t {
 
 class Points {
   Ints data;
+  Points(Ints&& a) : data(std::move(a))
+  {}
 public:
   Points() = default;
   Points(size_t k, p_t a);
@@ -47,14 +48,51 @@ public:
 };
 
 Points::Points(size_t k, p_t a) : data(k*2, a.x)
-{}
+{
+  for (size_t i = 0; i < k; ++i) {
+    data.set(i*2 + 1, a.y);
+  }
+}
+
+size_t Points::size()
+{
+  return data.size()/2;
+}
+
+void Points::set(size_t id, p_t a)
+{
+  data.set(id*2, a.x);
+  data.set(id*2 + 1, a.y);
+}
+
+p_t Points::get(size_t id) const
+{
+  return p_t{data.get(id*2), data.get(id*2 + 1)};
+}
+
+Points Points::append(p_t a) const
+{
+  Ints delta(2, a.x);
+  delta.set(1, a.y);
+  delta = data.append(delta);
+  return Points(std::move(delta));
+}
+
+
+
+
 
 
 
 
 int main()
 {
+  Points a(2, p_t{1,2});
+  p_t z {3, 4};
 
+  a = a.append(z);
+
+  std::cout << "CHECK\n";
 
 }
 
