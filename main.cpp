@@ -4,7 +4,12 @@
 class Ints {
 public:
   Ints();
-  Ints(int v) : n(v), data(new int[v]{}) {}
+  Ints(size_t v, int a) : n(v), data(new int[v]{})
+  {
+    for (size_t i = 0; i < v; i++) {
+      data[i] = a;
+    }
+  }
   Ints(const Ints& c);
   Ints(Ints&& c)  : n(c.n), data(c.data)
   {
@@ -24,6 +29,34 @@ private:
   size_t n;
   int* data;
 };
+
+struct p_t {
+  int x,y;
+};
+
+class Points {
+  Ints data;
+public:
+  Points() = default;
+  Points(size_t k, p_t a);
+  void set(size_t id, p_t a);
+  p_t get(size_t id) const;
+  size_t size();
+  Points append(p_t a) const;
+  Points append(const Points& w) const;
+};
+
+Points::Points(size_t k, p_t a) : data(k*2, a.x)
+{}
+
+
+
+
+int main()
+{
+
+
+}
 
 Ints Ints::append(const Ints& arr) const
 {
@@ -46,10 +79,10 @@ Ints Ints::append(int v) const
   return r;
 }
 
-inline Ints::Ints() : n(0), data(nullptr)
+Ints::Ints() : n(0), data(nullptr)
 {}
 
-inline Ints::Ints(const Ints& c) : n(c.n), data(c.n ? new int[c.n] : nullptr)
+Ints::Ints(const Ints& c) : n(c.n), data(c.n ? new int[c.n] : nullptr)
 {
   if (c.n) {
     for (size_t i = 0; i < c.n; ++i) {
@@ -58,7 +91,7 @@ inline Ints::Ints(const Ints& c) : n(c.n), data(c.n ? new int[c.n] : nullptr)
   }
 }
 
-inline Ints& Ints::operator=(const Ints& i)
+Ints& Ints::operator=(const Ints& i)
 {
   int* r = nullptr;
   if (i.n) {
@@ -73,7 +106,7 @@ inline Ints& Ints::operator=(const Ints& i)
   return *this;
 }
 
-inline Ints& Ints::operator=(Ints&& i)
+Ints& Ints::operator=(Ints&& i)
 {
   if (this != &i) {
     delete[] data;
@@ -84,35 +117,23 @@ inline Ints& Ints::operator=(Ints&& i)
   return *this;
 }
 
-inline Ints::~Ints()
+Ints::~Ints()
 {
   delete[] data;
 }
 
-inline size_t Ints::size() const
+size_t Ints::size() const
 {
   return n;
 }
 
-inline int Ints::get(size_t id) const
+int Ints::get(size_t id) const
 {
   return data[id];
 }
 
-inline void Ints::set(size_t id, int v)
+void Ints::set(size_t id, int v)
 {
   data[id] = v;
 }
-
-
-
-int main()
-{
-  Ints a(10);
-  a = std::move(a);
-  std::cout << "STATES\n";
-
-}
-
-
 
