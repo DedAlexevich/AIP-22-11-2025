@@ -1,11 +1,5 @@
 #include <iostream>
 
-//
-// Created by Петр Кузнецов on 17.11.2025.
-//
-
-#define AIP_17_11_2025_INTS_H
-
 
 class Ints {
 public:
